@@ -35,7 +35,7 @@ class VanillaCNN(nn.Module):
             nn.InstanceNorm2d(32)
         )
 
-    def forward(self, x):
-        x = self.conv1(self.conv0(x))
-        x = l2_norm(x, axis=1)
-        return x
+        def forward(self, x):
+            x = self.conv1(self.conv0(x))
+            x = l2_norm(x, axis=1)
+            return x

@@ -138,11 +138,9 @@ class CorrespondenceDataset(Dataset):
                                                                pix_pos[:, :, 1] > edge_thresh))
             msk = np.logical_and(msk, edge_msk)
         val_msk = np.logical_and(msk, val_msk)
+
         hs, ws = np.nonzero(val_msk)
         pos_num = len(hs)
-        if pos_num == 0:
-            hs, ws = np.random.randint(0, h, 3000), np.random.randint(0, w, 3000)
-            pos_num = len(hs)
         idxs = self.sample_indices(self.args['sample_num'], pos_num)
         pix_pos0 = np.concatenate([ws[idxs][:, None], hs[idxs][:, None]], 1)  # sn,2
         pix_pos1 = pix_pos[pix_pos0[:, 1], pix_pos0[:, 0]]
@@ -155,7 +153,6 @@ class CorrespondenceDataset(Dataset):
             np.random.shuffle(idxs)
             idxs = idxs[:sample_num]
         else:
-            # print(sample_num, pos_num)
             idxs = np.arange(pos_num)
             idxs = np.append(idxs, np.random.choice(idxs, sample_num - pos_num))
         return idxs

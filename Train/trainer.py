@@ -102,8 +102,8 @@ class Trainer:
 
     def _get_finetune_lr(self):
         # 5e-4 to 1e-5
-        lr = 5e-4 - (5e-4 - 1e-5) / (10000 // 250) * (self.step // 250)
-        lr = max(lr, 1e-5)
+        lr = 5e-5 - (5e-5 - 1e-6) / (10000 // 250) * (self.step // 250)
+        lr = max(lr, 1e-6)
         return lr
 
     def train(self):
@@ -143,7 +143,7 @@ class Trainer:
             total_step = self.step
             self.recorder.rec_loss(loss_info, total_step, total_step, 'train',
                                    ((total_step + 1) % self.config['info_step']) == 0)
-
+            print("step is %d, loss is %f" %(self.step, loss))
             # save model
             if (total_step + 1) % self.config['save_step'] == 0:
                 self._save_model()

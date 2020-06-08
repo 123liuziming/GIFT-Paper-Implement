@@ -30,7 +30,7 @@ def interpolate_feats(img, pts, feats):
     pts_norm = torch.unsqueeze(pts_norm, 1)  # b,1,n,2
 
     # interpolation
-    pfeats = F.grid_sample(feats, pts_norm, 'bilinear')[:, :, 0, :]  # b,f,n
+    pfeats = F._sample(feats, pts_norm, 'bilinear')[:, :, 0, :]  # b,f,n
     pfeats = pfeats.permute(0, 2, 1)  # b,n,f
     return pfeats
 
@@ -132,9 +132,10 @@ class TrainWrapper(nn.Module):
         pts_shem_gt = pts1 / self.hem_interval
         hem_thresh = hem_thresh / self.hem_interval
 
-        efeats0=self.embedder_wrapper(gfeats0)     # b,n,fe
-        efeats1=self.embedder_wrapper(gfeats1)  
-        dis_pos=torch.norm(efeats0-efeats1, 2, 2)
+        dis_pos = scale_rotate_offset_dist(gfeats0.permute(0, 1, 3, 4, 2), gfeats1.permute(0, 1, 3, 4, 2),
+                                           scale_offset, rotate_offset, self.sn, self.rn)
+        dis_pos = dis_pos[:, None, None, :].repeat(1, sn, rn, 1).reshape(b * sn * rn, n)  # b*sn*rn,n
+
         # pos distance
 
         results = {
